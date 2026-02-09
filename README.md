@@ -1,5 +1,4 @@
-# LinkUP
-
+# LinkUP V2.0
 LinkUP is a modern social media platform built with Laravel, inspired by Instagram's aesthetic and functionality. This application provides a complete social networking experience with a beautiful, responsive UI and comprehensive features for connecting and sharing with friends.
 
 ## 🌟 Features
