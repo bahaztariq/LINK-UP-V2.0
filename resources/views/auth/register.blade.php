@@ -53,5 +53,28 @@
                 </button>
             </div>
         </form>
+
+        <div class="mt-6">
+            <div class="relative">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-slate-200"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                    <span class="px-2 bg-white text-slate-500 font-medium">Or continue with</span>
+                </div>
+            </div>
+
+            <div class="mt-6 grid grid-cols-2 gap-3">
+                <a href="{{ route('social.redirect', 'google') }}" class="flex items-center justify-center px-4 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all duration-200 group">
+                    <img src="https://www.svgrepo.com/show/355037/google.svg" class="w-5 h-5 me-2" alt="Google">
+                    <span class="text-sm font-bold text-slate-700">Google</span>
+                </a>
+                
+                <a href="{{ route('social.redirect', 'facebook') }}" class="flex items-center justify-center px-4 py-2.5 bg-[#1877F2] rounded-xl hover:bg-[#1877F2]/90 transition-all duration-200 group">
+                    <img src="https://www.svgrepo.com/show/475647/facebook-color.svg" class="w-5 h-5 me-2 brightness-0 invert" alt="Facebook">
+                    <span class="text-sm font-bold text-white">Facebook</span>
+                </a>
+            </div>
+        </div>
     </div>
 </x-guest-layout>
