@@ -94,7 +94,7 @@
                      <h1 class="text-xl font-extrabold leading-6">{{ $user->name }}</h1>
                      <p class="text-[15px] text-gray-500 mb-3">@ {{ strtolower(str_replace(' ', '', $user->name)) }}</p>
                      
-                     <p class="text-[15px] text-gray-900 mb-3">
+                     {{-- <p class="text-[15px] text-gray-900 mb-3">
                          Digital Creator • Tech Enthusiast • Building LinkUP 🚀
                      </p>
 
@@ -112,7 +112,7 @@
                              <span class="font-bold text-gray-900">{{ rand(500, 2000) }}</span> 
                              <span class="text-gray-500">Followers</span>
                          </div>
-                     </div>
+                     </div> --}}
                 </div>
             </div>
 

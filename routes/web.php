@@ -60,7 +60,7 @@ Route::middleware([
     })->name('profile.show');
     
     Route::get('/user/{user}', [\App\Http\Controllers\UserController::class, 'show'])->name('user.show');
-    Route::get('/messages', [\App\Http\Controllers\ConversationController::class, 'index'])->name('conversations.index');
+    Route::get('/messages', [\App\Http\Controllers\ConversationController::class, 'index'])->name('messages');
     Route::get('/conversations/{id}', [\App\Http\Controllers\ConversationController::class, 'show'])->name('conversations.show');
     Route::post('/messages/send', [\App\Http\Controllers\MessageController::class, 'store'])->name('messages.store');
 });

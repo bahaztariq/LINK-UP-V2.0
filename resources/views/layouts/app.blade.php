@@ -33,7 +33,7 @@
             @include('navigation-menu')
 
             <!-- Main Content Area -->
-            <main class="flex-1 ml-20 xl:ml-64 xl:mr-[350px] min-h-screen border-r border-slate-200">
+            <main class="flex-1  xl:ml-64 xl:mr-[350px] min-h-screen border-r border-slate-200">
                 {{ $slot }}
             </main>
 

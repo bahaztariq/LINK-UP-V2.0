@@ -1,7 +1,7 @@
 <x-app-layout>
-    <div class="py-12 flex-1 h-[calc(100vh-6rem)]">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 h-full">
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-2xl flex h-full border border-slate-200">
+    <div class=" flex-1 h-full">
+        <div class="max-w-7xl mx-auto  h-full">
+            <div class="bg-white overflow-hidden shadow-xl  flex h-full border border-slate-200">
                 
                 <!-- Sidebar: Conversation List -->
                 <div class="w-1/3 border-r border-slate-100 flex flex-col bg-white">
