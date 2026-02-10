@@ -9,6 +9,7 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use App\Models\Message;
 
 class MessageSent implements ShouldBroadcast
 {
@@ -16,16 +17,16 @@ class MessageSent implements ShouldBroadcast
 
 
 
-    private $message;
-    private $id;
+    public $message;
+    public $id; // Conversation ID
+
     /**
      * Create a new event instance.
      */
-    public function __construct($message,$id)
+    public function __construct(Message $message, $id)
     {
-        $this->message = $message;
+        $this->message = $message->load('user'); // Ensure user info is broadcast
         $this->id = $id;
-
     }
 
     /**
