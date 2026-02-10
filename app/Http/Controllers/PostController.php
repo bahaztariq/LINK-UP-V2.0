@@ -50,6 +50,8 @@ class PostController extends Controller
 
         $request->user()->posts()->create($postData);
 
+        event(new postevent('post created'));
+
         return redirect()->route('dashboard');
     }
 

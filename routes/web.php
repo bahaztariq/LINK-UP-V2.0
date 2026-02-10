@@ -57,4 +57,5 @@ Route::middleware([
     })->name('profile.show');
     
     Route::get('/user/{user}', [\App\Http\Controllers\UserController::class, 'show'])->name('user.show');
+    Route::post('/messages', [\App\Http\Controllers\MessageController::class, 'store'])->name('messages.store');
 });
