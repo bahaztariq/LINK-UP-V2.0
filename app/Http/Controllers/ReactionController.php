@@ -35,7 +35,7 @@ class ReactionController extends Controller
 
         $request->user()->reactions()->create($validated);
 
-        $mssgReaction = User::fint()
+        // $mssgReaction = User::fint()
 
 
         return back();
