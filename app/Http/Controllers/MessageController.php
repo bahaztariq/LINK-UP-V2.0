@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class Message extends Controller
+use App\Events\MessageSent;
+
+class MessageController extends Controller
 {
     /**
      * Display a listing of the resource.

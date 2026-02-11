@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Models\Conversation;
 use App\Models\Message;
+use App\Models\User;
 
 class ConversationController extends Controller
 {
@@ -15,15 +16,33 @@ class ConversationController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, User $user)
     {
-        //
+        // Check if a conversation already exists between the two users
+        $conversation = Conversation::where(function($query) use ($user) {
+            $query->where('user1_id', auth()->id())
+                  ->where('user2_id', $user->id);
+        })->orWhere(function($query) use ($user) {
+            $query->where('user1_id', $user->id)
+                  ->where('user2_id', auth()->id());
+        })->first();
+
+        if (!$conversation) {
+            // Create new conversation
+            $conversation = Conversation::create([
+                'user1_id' => auth()->id(),
+                'user2_id' => $user->id,
+            ]);
+        }
+
+        
+        return redirect()->route('conversations.show', $conversation->id);
     }
 
     /**

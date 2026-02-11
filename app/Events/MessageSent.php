@@ -41,7 +41,7 @@ class MessageSent implements ShouldBroadcast
         ];
     }
 
-    public function broadcastas()
+    public function broadcastAs()
     {
         return 'message.sent';
     }

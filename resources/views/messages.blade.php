@@ -1,6 +1,6 @@
 <x-app-layout>
-    <div class=" flex-1 h-full">
-        <div class="max-w-7xl mx-auto  h-full">
+    <div class="flex-1 h-[calc(100vh-1rem)] overflow-hidden flex flex-col">
+        <div class="max-w-7xl mx-auto h-full w-full">
             <div class="bg-white overflow-hidden shadow-xl  flex h-full border border-slate-200">
                 
                 <!-- Sidebar: Conversation List -->
@@ -8,7 +8,7 @@
                     <div class="p-4 border-b border-slate-100">
                         <h2 class="text-xl font-bold text-slate-800">Messages</h2>
                     </div>
-                    <div class="overflow-y-auto flex-1">
+                    <div class="overflow-y-auto flex-1 no-scrollbar">
                         @forelse($conversations as $convo)
                             @php
                                 $otherUser = $convo->users->where('id', '!=', auth()->id())->first();
@@ -64,7 +64,8 @@
                         </div>
 
                         <!-- Messages Area -->
-                        <div id="messages" class="flex-1 overflow-y-auto p-6 space-y-6">
+                        <div id="messages" class="flex-1 overflow-y-auto min-h-0 no-scrollbar flex flex-col">
+                            <div class="mt-auto p-6 space-y-6">
                             @foreach($conversation->messages as $message)
                                 <div class="flex w-full {{ $message->sender_id === auth()->id() ? 'justify-end' : 'justify-start' }}">
                                     <div class="flex max-w-[75%] {{ $message->sender_id === auth()->id() ? 'flex-row-reverse' : 'flex-row' }} gap-2">
@@ -89,6 +90,7 @@
                                     </div>
                                 </div>
                             @endforeach
+                            </div>
                         </div>
 
                         <!-- Input Area -->
@@ -190,7 +192,10 @@
                 innerDiv.appendChild(bubbleWrapper);
                 wrapperDiv.appendChild(innerDiv);
                 
-                messagesDiv.appendChild(wrapperDiv);
+                // Find the content container
+                const contentDiv = messagesDiv.querySelector('.mt-auto');
+                contentDiv.appendChild(wrapperDiv);
+                
                 scrollToBottom();
             });
 
