@@ -1,6 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\SocialiteController;
+
+Route::get('/auth/{provider}/redirect', [SocialiteController::class, 'redirect'])->name('social.redirect');
+Route::get('/auth/{provider}/callback', [SocialiteController::class, 'callback'])->name('social.callback');
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -40,9 +45,8 @@ Route::middleware([
         return view('explore');
     })->name('explore');
 
-    Route::get('/notifications', function () {
-        return view('notifications');
-    })->name('notifications');
+    Route::get('/notifications', [\App\Http\Controllers\NotificationController::class , 'index'])->name('notifications');
+    Route::post('/mark-as-read', [\App\Http\Controllers\NotificationController::class , 'markAsRead'])->name('mark_as_read');
 
     Route::get('/messages', function () {
         return view('messages');
@@ -57,4 +61,5 @@ Route::middleware([
     })->name('profile.show');
     
     Route::get('/user/{user}', [\App\Http\Controllers\UserController::class, 'show'])->name('user.show');
+    Route::get('/notify' , [\App\Http\Controllers\DashboardController::class , 'notify']);
 });

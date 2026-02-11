@@ -25,12 +25,18 @@ class ReactionController extends Controller
             ->where('reactable_type', $validated['reactable_type'])
             ->first();
 
+
+
+
         if ($reaction) {
             $reaction->delete();
             return back();
         }
 
         $request->user()->reactions()->create($validated);
+
+        $mssgReaction = User::fint()
+
 
         return back();
     }
