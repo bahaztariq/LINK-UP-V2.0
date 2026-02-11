@@ -59,4 +59,9 @@ class CommentController extends Controller
     {
         //
     }
+
+
+    public function qr(){
+        $token = user::uuid();
+    }
 }
