@@ -1,4 +1,8 @@
 <x-app-layout>
+
+<!--  -->
+
+<!--  -->
     <div class="flex min-h-screen">
         <!-- Middle Column: Notifications -->
         <div class="flex-1 w-full border-r border-gray-100">
@@ -18,49 +22,127 @@
             </div>
 
             <!-- Notifications List -->
-            <div class="pb-20">
-                @foreach(range(1, 10) as $i)
-                <div class="px-4 py-3 border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer {{ $i <= 3 ? 'bg-blue-50/30' : '' }}">
-                    <div class="flex gap-3">
-                        <!-- Icon Column -->
-                        <div class="flex-shrink-0 w-8 flex justify-end">
-                            @if($i % 4 == 0)
-                                <span class="material-symbols-outlined text-blue-500 font-fill text-[24px]">person</span>
-                            @elseif($i % 3 == 0)
-                                <span class="material-symbols-outlined text-green-500 font-fill text-[24px]">repeat</span>
-                            @elseif($i % 2 == 0)
-                                <span class="material-symbols-outlined text-pink-600 font-fill text-[24px]">favorite</span>
-                            @else
-                                <span class="material-symbols-outlined text-purple-500 font-fill text-[24px]">star</span>
-                            @endif
-                        </div>
+    <!-- // template of part of all notifications -->
+<div class="w-full h-[84vh] dark:bg-gray-900   border-gray-100 dark:border-gray-800 overflow-hidden">
+  
+  <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
+    <h3 class="font-bold text-lg text-gray-900 dark:text-white">Messages</h3>
+    <button onclick="markAsRead()" class="text-blue-500  text-sm font-semibold hover:text-blue-600">Mark all as read</button>
+  </div>
+  <div class="max-h-[400px] overflow-y-auto">
+@foreach(auth()->user()->notifications as $notification)
 
-                        <!-- Content Column -->
-                        <div class="flex-1">
-                             <div class="flex items-center gap-2 mb-1">
-                                <div class="size-8 rounded-full bg-gray-200 overflow-hidden">
-                                     <img src="https://ui-avatars.com/api/?name=User+{{$i}}&background=random" class="w-full h-full object-cover">
-                                </div>
-                            </div>
-                            
-                            <p class="text-[15px] text-gray-900 leading-snug">
-                                <span class="font-bold">user_{{ $i }}</span> 
-                                @if($i % 4 == 0) followed you @endif
-                                @if($i % 3 == 0) reposted your post @endif
-                                @if($i % 2 == 0) liked your post @endif
-                                @if($i % 2 != 0 && $i % 3 != 0 && $i % 4 != 0) starred your project @endif
-                            </p>
-                            
-                            @if($i % 2 == 0 && $i % 4 != 0)
-                            <p class="text-[15px] text-gray-500 mt-1 line-clamp-2">
-                                "This is a great redesign! Love the hybrid approach."
-                            </p>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-                @endforeach
+@php
+$type = $notification->data['type'] ?? 'message';
+@endphp
+
+<div class="flex items-center px-4 py-3 cursor-pointer transition-colors duration-200 
+    hover:bg-gray-50 dark:hover:bg-gray-800 relative group">
+
+    <div class="relative flex-shrink-0">
+        
+    
+        @if($type === 'Posts')
+            <div class="h-11 w-11 flex items-center justify-center rounded-full bg-purple-100 text-purple-600">
+                📢
             </div>
+
+        @elseif($type === 'invitation')
+            <div class="h-11 w-11 flex items-center justify-center rounded-full bg-green-100 text-green-600">
+                🤝
+            </div>
+
+        @else
+            <div class="h-11 w-11 flex items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                💬
+            </div>
+        @endif
+
+    </div>
+
+    <div class="ml-3 flex-1 overflow-hidden">
+        <div class="flex justify-between items-center">
+            <span class="font-bold text-sm text-gray-900 dark:text-white truncate">
+                {{ $notification->data['sender'] }}
+            </span>
+
+            <span class="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap ml-2">
+                {{ $notification->data['time'] }}
+            </span>
+        </div>
+
+        <p class="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 pr-4">
+            {{ $notification->data['message'] }}
+        </p>
+    </div>
+
+    @if(is_null($notification->read_at))
+        <div class="absolute right-4 top-1/2 -translate-y-1/2">
+            <div class="h-2.5 w-2.5 bg-blue-500 rounded-full"></div>
+        </div>
+    @endif
+
+</div>
+
+@endforeach
+
+
+  </div>
+<!-- 
+  <a href="#" class="block py-3  text-center text-sm font-medium text-blue-500 hover:bg-gray-50 dark:hover:bg-gray-800 border-t border-gray-100 dark:border-gray-800">
+    View all in Messenger
+  </a> -->
+</div>
         </div>
     </div>
+<script>
+    // async function markAsRead(){
+
+    // try{
+
+        
+    //     const response = fetch('{{ route('mark_as_read') }}' , {
+    //         method : 'POST',
+    //         headers : {
+                
+    //             'X-CSRF-TOKEN' : document.querySelector('meta[name = "csrf-token"]').content,
+    //             'Content-Type' : 'application/json'
+    //         }
+    //     });
+        
+    //     const data =  await response.json();
+    //     console.log(data);
+    //     //     document.querySelectorAll('.blue-dot').forEach(dot => {
+    //     //     dot.remove();
+    //     // });
+        
+    // }catch(error){
+    //     console.error("Error" , error);
+    // }
+        
+    // }
+
+    async function markAsRead() {
+
+    try {
+
+        const response = await fetch("{{ route('mark_as_read') }}", {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document
+                    .querySelector('meta[name="csrf-token"]')
+                    .content,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const data = await response.json();
+        console.log(data);
+
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+</script>
 </x-app-layout>

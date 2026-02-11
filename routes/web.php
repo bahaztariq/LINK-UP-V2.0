@@ -50,9 +50,8 @@ Route::middleware([
         return view('explore');
     })->name('explore');
 
-    Route::get('/notifications', function () {
-        return view('notifications');
-    })->name('notifications');
+    Route::get('/notifications', [\App\Http\Controllers\NotificationController::class , 'index'])->name('notifications');
+    Route::post('/mark-as-read', [\App\Http\Controllers\NotificationController::class , 'markAsRead'])->name('mark_as_read');
 
 
 
@@ -65,6 +64,7 @@ Route::middleware([
     })->name('profile.show');
     
     Route::get('/user/{user}', [\App\Http\Controllers\UserController::class, 'show'])->name('user.show');
+    Route::get('/notify' , [\App\Http\Controllers\DashboardController::class , 'notify']);
     Route::get('/messages', [\App\Http\Controllers\ConversationController::class, 'index'])->name('messages');
     Route::get('/conversations/{id}', [\App\Http\Controllers\ConversationController::class, 'show'])->name('conversations.show');
     Route::post('/conversations/create/{user}', [\App\Http\Controllers\ConversationController::class, 'store'])->name('conversation.create');

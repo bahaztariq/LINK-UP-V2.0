@@ -3,9 +3,12 @@
 
 
 namespace App\Http\Controllers;
-
+use App\Models\Friendship;
 use App\Models\Post;
+use App\Models\User;
+use App\Notifications\NewMessage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 
 class PostController extends Controller
 {
@@ -50,6 +53,13 @@ class PostController extends Controller
 
         $request->user()->posts()->create($postData);
 
+        $sentFriends = Friendship::where('requester_id', auth()->id())
+    ->where('status', 'accepted')
+    ->pluck('addressee_id');
+
+        $users = User::whereIn('id' , $sentFriends)->get();
+        Notification::send($users,new NewMessage($request->content , auth()->user(), 'Posts'));
+       
         event(new postevent('post created'));
 
         return redirect()->route('dashboard');
