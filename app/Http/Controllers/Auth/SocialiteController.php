@@ -24,35 +24,49 @@ class SocialiteController extends Controller
         try {
             $socialUser = Socialite::driver($provider)->user();
             
-            $user = User::where('social_id', $socialUser->id)
+            \Log::info('Social User details:', [
+                'id' => $socialUser->getId(),
+                'email' => $socialUser->getEmail(),
+                'name' => $socialUser->getName(),
+            ]);
+
+            $user = User::where('social_id', $socialUser->getId())
                         ->where('social_type', $provider)
                         ->first();
 
             if (!$user) {
-                $user = User::where('email', $socialUser->email)->first();
+                $user = User::where('email', $socialUser->getEmail())->first();
 
                 if ($user) {
                     $user->update([
-                        'social_id' => $socialUser->id,
+                        'social_id' => $socialUser->getId(),
                         'social_type' => $provider,
                     ]);
+                    \Log::info('Existing user updated with social details:', ['user_id' => $user->id]);
                 } else {
                     $user = User::create([
-                        'name' => $socialUser->name,
-                        'email' => $socialUser->email,
-                        'social_id' => $socialUser->id,
+                        'name' => $socialUser->getName(),
+                        'email' => $socialUser->getEmail(),
+                        'social_id' => $socialUser->getId(),
                         'social_type' => $provider,
                         'password' => null, 
                     ]);
+                    \Log::info('New user created from social login:', ['user_id' => $user->id]);
                 }
             }
 
             Auth::login($user);
+            \Log::info('User logged in:', ['user_id' => $user->id]);
 
-            return redirect()->intended('dashboard');
+            return redirect()->route('dashboard');
 
         } catch (Exception $e) {
-            return redirect('/login')->with('error', 'Something went wrong during ' . $provider . ' login.');
+            \Log::error('Socialite authentication error:', [
+                'provider' => $provider,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return redirect('/login')->with('error', 'Something went wrong during ' . $provider . ' login: ' . $e->getMessage());
         }
     }
 }

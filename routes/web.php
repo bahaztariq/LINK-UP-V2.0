@@ -62,4 +62,9 @@ Route::middleware([
     })->name('profile.show');
     
     Route::get('/user/{user}', [\App\Http\Controllers\UserController::class, 'show'])->name('user.show');
+
+    // Invitation Routes
+    Route::post('/invitations/generate', [\App\Http\Controllers\InvitationController::class, 'generate'])->name('invitations.generate');
+    Route::get('/invitations/qr/{token}', [\App\Http\Controllers\InvitationController::class, 'showQR'])->name('invitations.qr');
+    Route::get('/invitations/accept/{token}', [\App\Http\Controllers\InvitationController::class, 'accept'])->name('invitations.accept');
 });

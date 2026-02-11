@@ -131,4 +131,9 @@ class User extends Authenticatable
     {
         return $this->getPendingFriendRequestTo($user) !== null;
     }
+
+    public function friendInvitations()
+    {
+        return $this->hasMany(FriendInvitation::class);
+    }
 }
