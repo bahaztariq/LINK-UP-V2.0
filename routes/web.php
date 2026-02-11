@@ -1,6 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ConversationController;
+use App\Http\Controllers\MessageController;
+use App\Models\Conversation;
+use App\Models\Message;
+use App\Models\User;
 
 Route::get('/', function () {
     return view('welcome');
@@ -44,9 +49,7 @@ Route::middleware([
         return view('notifications');
     })->name('notifications');
 
-    Route::get('/messages', function () {
-        return view('messages');
-    })->name('messages');
+
 
     Route::get('/reels', function () {
         return view('reels');
@@ -57,4 +60,8 @@ Route::middleware([
     })->name('profile.show');
     
     Route::get('/user/{user}', [\App\Http\Controllers\UserController::class, 'show'])->name('user.show');
+    Route::get('/messages', [\App\Http\Controllers\ConversationController::class, 'index'])->name('messages');
+    Route::get('/conversations/{id}', [\App\Http\Controllers\ConversationController::class, 'show'])->name('conversations.show');
+    Route::post('/conversations/create/{user}', [\App\Http\Controllers\ConversationController::class, 'store'])->name('conversation.create');
+    Route::post('/messages/send', [\App\Http\Controllers\MessageController::class, 'store'])->name('messages.store');
 });

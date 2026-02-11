@@ -43,14 +43,14 @@
                         @else
                              <!-- Friend/Follow Logic -->
                              <div class="flex gap-2">
-                                <button class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors">
-                                    <span class="material-symbols-outlined text-[18px] text-slate-600">more_horiz</span>
-                                </button>
-                                <button class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors">
-                                    <span class="material-symbols-outlined text-[18px] text-slate-600">mail</span>
-                                </button>
-                                
                                 @if(Auth::user()->isFriendWith($user))
+                                    {{-- send message --}}
+                                    <form action="{{ route('conversation.create', $user->id) }}" method="POST">
+                                        @csrf @method('post')
+                                        <button type="submit" class="px-4 py-1.5 bg-black  text-white rounded-full font-bold text-[15px] hover:bg-slate-800 transition-colors">
+                                            message
+                                        </button>
+                                    </form>
                                     {{-- Unfriend --}}
                                     <form action="{{ route('friendships.destroy', $user->friendshipsReceived()->where('requester_id', Auth::id())->first()->id ?? $user->friendshipsSent()->where('addressee_id', Auth::id())->first()->id) }}" method="POST" onsubmit="return confirm('Remove friend?');">
                                         @csrf @method('DELETE')
@@ -94,7 +94,7 @@
                      <h1 class="text-xl font-extrabold leading-6">{{ $user->name }}</h1>
                      <p class="text-[15px] text-gray-500 mb-3">@ {{ strtolower(str_replace(' ', '', $user->name)) }}</p>
                      
-                     <p class="text-[15px] text-gray-900 mb-3">
+                     {{-- <p class="text-[15px] text-gray-900 mb-3">
                          Digital Creator • Tech Enthusiast • Building LinkUP 🚀
                      </p>
 
@@ -112,7 +112,7 @@
                              <span class="font-bold text-gray-900">{{ rand(500, 2000) }}</span> 
                              <span class="text-gray-500">Followers</span>
                          </div>
-                     </div>
+                     </div> --}}
                 </div>
             </div>
 
