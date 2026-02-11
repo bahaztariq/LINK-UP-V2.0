@@ -6,6 +6,11 @@ use App\Http\Controllers\MessageController;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\User;
+use App\Http\Controllers\Auth\SocialiteController;
+
+Route::get('/auth/{provider}/redirect', [SocialiteController::class, 'redirect'])->name('social.redirect');
+Route::get('/auth/{provider}/callback', [SocialiteController::class, 'callback'])->name('social.callback');
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -64,4 +69,9 @@ Route::middleware([
     Route::get('/conversations/{id}', [\App\Http\Controllers\ConversationController::class, 'show'])->name('conversations.show');
     Route::post('/conversations/create/{user}', [\App\Http\Controllers\ConversationController::class, 'store'])->name('conversation.create');
     Route::post('/messages/send', [\App\Http\Controllers\MessageController::class, 'store'])->name('messages.store');
+
+    // Invitation Routes
+    Route::post('/invitations/generate', [\App\Http\Controllers\InvitationController::class, 'generate'])->name('invitations.generate');
+    Route::get('/invitations/qr/{token}', [\App\Http\Controllers\InvitationController::class, 'showQR'])->name('invitations.qr');
+    Route::get('/invitations/accept/{token}', [\App\Http\Controllers\InvitationController::class, 'accept'])->name('invitations.accept');
 });
