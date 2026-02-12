@@ -12,6 +12,12 @@
             </div>
         @endsession
 
+        @session('error')
+            <div class="mb-4 font-medium text-sm text-red-600 bg-red-50 p-3 rounded-xl border border-red-100">
+                {{ $value }}
+            </div>
+        @endsession
+
         <form method="POST" action="{{ route('login') }}">
             @csrf
 

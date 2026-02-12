@@ -1,4 +1,4 @@
-<aside class="w-20 xl:w-64 fixed h-screen border-r border-slate-200 flex flex-col p-3 xl:p-6 gap-8 overflow-y-auto z-50 transition-all duration-300">
+<aside class="hidden md:flex w-20 xl:w-64 fixed h-screen border-r border-slate-200 flex flex-col p-3 xl:p-6 gap-8 overflow-y-auto z-50 transition-all duration-300">
     <div class="flex items-center justify-center xl:justify-start gap-3 px-2">
         <div class="bg-primary size-10 rounded-xl flex items-center justify-center text-white shrink-0">
             <span class="material-symbols-outlined text-2xl">grid_view</span>

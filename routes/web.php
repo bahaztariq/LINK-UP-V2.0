@@ -1,6 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ConversationController;
+use App\Http\Controllers\MessageController;
+use App\Models\Conversation;
+use App\Models\Message;
+use App\Models\User;
 use App\Http\Controllers\Auth\SocialiteController;
 
 Route::get('/auth/{provider}/redirect', [SocialiteController::class, 'redirect'])->name('social.redirect');
@@ -48,9 +53,7 @@ Route::middleware([
     Route::get('/notifications', [\App\Http\Controllers\NotificationController::class , 'index'])->name('notifications');
     Route::post('/mark-as-read', [\App\Http\Controllers\NotificationController::class , 'markAsRead'])->name('mark_as_read');
 
-    Route::get('/messages', function () {
-        return view('messages');
-    })->name('messages');
+
 
     Route::get('/reels', function () {
         return view('reels');
@@ -62,4 +65,13 @@ Route::middleware([
     
     Route::get('/user/{user}', [\App\Http\Controllers\UserController::class, 'show'])->name('user.show');
     Route::get('/notify' , [\App\Http\Controllers\DashboardController::class , 'notify']);
+    Route::get('/messages', [\App\Http\Controllers\ConversationController::class, 'index'])->name('messages');
+    Route::get('/conversations/{id}', [\App\Http\Controllers\ConversationController::class, 'show'])->name('conversations.show');
+    Route::post('/conversations/create/{user}', [\App\Http\Controllers\ConversationController::class, 'store'])->name('conversation.create');
+    Route::post('/messages/send', [\App\Http\Controllers\MessageController::class, 'store'])->name('messages.store');
+
+    // Invitation Routes
+    Route::post('/invitations/generate', [\App\Http\Controllers\InvitationController::class, 'generate'])->name('invitations.generate');
+    Route::get('/invitations/qr/{token}', [\App\Http\Controllers\InvitationController::class, 'showQR'])->name('invitations.qr');
+    Route::get('/invitations/accept/{token}', [\App\Http\Controllers\InvitationController::class, 'accept'])->name('invitations.accept');
 });
