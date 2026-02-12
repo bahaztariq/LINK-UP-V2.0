@@ -88,6 +88,7 @@
                  <form action="{{ route('reactions.toggle') }}" method="POST" @click.stop>
                     @csrf
                     <input type="hidden" name="reactable_id" value="{{ $post->id }}">
+                    <input type="hidden" name="user_id" value="{{ $post->user_id }}">
                     <input type="hidden" name="reactable_type" value="App\Models\Post">
                     <input type="hidden" name="type" value="like">
                     <button type="submit" class="flex items-center gap-2 text-slate-500 hover:text-red-500 transition-colors group">
@@ -109,6 +110,7 @@
                 <form action="{{ route('comments.store') }}" method="POST" class="flex gap-3 mb-4 items-start">
                     @csrf
                     <input type="hidden" name="commentable_id" value="{{ $post->id }}">
+                    <input type="hidden" name="user_id" value="{{ $post->user_id }}">
                     <input type="hidden" name="commentable_type" value="App\Models\Post">
                     
                     @if (Laravel\Jetstream\Jetstream::managesProfilePhotos() && Auth::user()->profile_photo_url)

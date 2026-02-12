@@ -3,7 +3,8 @@
 
 
 namespace App\Http\Controllers;
-
+use App\Models\User;
+use App\Notifications\NewMessage;
 use App\Models\Reaction;
 use Illuminate\Http\Request;
 
@@ -35,7 +36,15 @@ class ReactionController extends Controller
 
         $request->user()->reactions()->create($validated);
 
-        // $mssgReaction = User::fint()
+        if(auth()->id() != $request->user_id ){
+
+            $mssgReaction = User::find($request->user_id);
+            if($mssgReaction){
+
+                $message = 'liked your post';
+                $mssgReaction->notify(new NewMessage($message , auth()->user() , 'like'));
+                }
+            }
 
 
         return back();

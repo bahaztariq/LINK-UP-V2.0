@@ -7,6 +7,7 @@ use App\Models\Friendship;
 use App\Models\Post;
 use App\Models\User;
 use App\Notifications\NewMessage;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 
