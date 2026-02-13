@@ -155,5 +155,7 @@ $type = $notification->data['type'] ?? 'message';
     }
 }
 
+ 
+
 </script>
 </x-app-layout>

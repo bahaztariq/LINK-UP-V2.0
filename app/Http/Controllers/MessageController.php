@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Events\MessageSent;
+use App\Events\mssgNotification;
 
 class MessageController extends Controller
 {
@@ -39,9 +40,31 @@ class MessageController extends Controller
             'content' => $validated['content'],
             'receiver_id' => $validated['receiver_id'],
             'conversation_id' => $validated['conversation_id'],
-        ]);
+            ]);
+            
+            
+            
+            event(new MessageSent($message,$validated['conversation_id']));
+            
+            // $receiver = User::find($validated['receiver_id']);
+            // if ($receiver) {
+                // $notificationText = 'Sent You A Message';
 
-        event(new MessageSent($message,$validated['conversation_id']));
+                //  $receiver->notify(
+                //      new NewMessage($notificationText, auth()->user(), 'message')
+                //  );
+                // }
+             
+                 event(new mssgNotification(
+                     auth()->user(),
+                     $validated['receiver_id'],
+                     $validated['conversation_id']
+                 ));
+
+            // dd($receiver);
+          
+                
+      
 
         return response()->json(['message' => 'Message sent successfully']);
     }

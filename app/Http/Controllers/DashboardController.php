@@ -23,18 +23,4 @@ class DashboardController extends Controller
 
         return view('dashboard', compact('posts', 'suggestedUsers'));
     }
-
-
-    public function notify(Request $request){
-
-        if(auth()->check()){
-            $receiver = User::find(2);
-            $message = "hello How're you doing" ;
-            if($receiver){
-                $receiver->notify(new NewMessage($message , auth()->user() , 'message'));
-            }
-        }
-    }
-
-
 }
