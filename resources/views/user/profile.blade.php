@@ -158,8 +158,9 @@
         
     </div>
 
+@push('modals')
     <!-- QR Modal -->
-    <div id="qr-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div id="qr-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/60 backdrop-blur-sm">
         <div class="bg-white rounded-[32px] p-8 max-w-sm w-full mx-4 shadow-2xl">
             <div class="flex justify-between items-center mb-8">
                 <div>
@@ -212,4 +213,5 @@
             };
         }
     </script>
+@endpush
 </x-app-layout>

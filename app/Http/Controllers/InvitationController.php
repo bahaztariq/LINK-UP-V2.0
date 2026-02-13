@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\FriendInvitation;
+use App\Models\Invitation;
 use App\Models\Friendship;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -17,10 +17,20 @@ class InvitationController extends Controller
 {
     public function generate()
     {
-        $invitation = FriendInvitation::create([
-            'user_id' => Auth::id(),
-            'token' => Str::random(32),
-        ]);
+        // Try to find an existing valid token (unused and not expired)
+        $invitation = Invitation::where('user_id', Auth::id())
+            ->whereNull('used_at')
+            ->where('expires_at', '>', now())
+            ->latest()
+            ->first();
+
+        if (!$invitation) {
+            $invitation = Invitation::create([
+                'user_id' => Auth::id(),
+                'token' => Str::random(32),
+                'expires_at' => now()->addHour(),
+            ]);
+        }
 
         return response()->json([
             'token' => $invitation->token,
@@ -30,8 +40,12 @@ class InvitationController extends Controller
 
     public function showQR($token)
     {
-        $invitation = FriendInvitation::where('token', $token)->firstOrFail();
+        $invitation = Invitation::where('token', $token)->firstOrFail();
         
+        if ($invitation->isExpired()) {
+            abort(404, 'Invitation expired');
+        }
+
         $url = route('invitations.accept', $token);
         
         $renderer = new ImageRenderer(
@@ -46,7 +60,11 @@ class InvitationController extends Controller
 
     public function accept($token)
     {
-        $invitation = FriendInvitation::where('token', $token)->firstOrFail();
+        $invitation = Invitation::where('token', $token)->firstOrFail();
+
+        if ($invitation->isExpired()) {
+            return redirect()->route('dashboard')->with('error', 'This invitation has expired.');
+        }
 
         if ($invitation->isUsed()) {
             return redirect()->route('dashboard')->with('error', 'This invitation has already been used.');
