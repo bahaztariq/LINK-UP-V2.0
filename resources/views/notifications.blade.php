@@ -52,7 +52,18 @@ $type = $notification->data['type'] ?? 'message';
                 🤝
             </div>
 
+           @elseif($type === 'like')
+            <div class="h-11 w-11 flex items-center justify-center rounded-full bg-green-100 text-green-600">
+                ❤️
+            </div>
+
+         @elseif($type === 'comment')
+            <div class="h-11 w-11 flex items-center justify-center rounded-full bg-green-100 text-green-600">
+                📫
+            </div>
+
         @else
+
             <div class="h-11 w-11 flex items-center justify-center rounded-full bg-blue-100 text-blue-600">
                 💬
             </div>
@@ -143,6 +154,8 @@ $type = $notification->data['type'] ?? 'message';
         console.error(error);
     }
 }
+
+ 
 
 </script>
 </x-app-layout>
