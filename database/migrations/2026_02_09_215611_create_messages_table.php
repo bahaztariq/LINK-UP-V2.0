@@ -17,6 +17,8 @@ return new class extends Migration
             $table->foreignId('sender_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('receiver_id')->constrained('users')->onDelete('cascade');
             $table->text('content');
+            $table->boolean('is_edited')->default(false);
+            $table->timestamp('expires_at')->nullable();
             $table->timestamps();
         });
     }
