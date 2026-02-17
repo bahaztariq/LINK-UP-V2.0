@@ -80,12 +80,23 @@
 
                                         <!-- Bubble -->
                                         <div>
-                                            <div class="{{ $message->sender_id === auth()->id() ? 'bg-slate-900 text-white rounded-tr-none' : 'bg-white text-slate-900 border border-slate-200 rounded-tl-none' }} rounded-2xl px-4 py-3 shadow-sm">
-                                                <p class="text-sm">{{ $message->content }}</p>
+                                            <div class="relative group {{ $message->sender_id === auth()->id() ? 'bg-slate-900 text-white rounded-tr-none' : 'bg-white text-slate-900 border border-slate-200 rounded-tl-none' }} rounded-2xl px-4 py-3 shadow-sm">
+                                                <p class="text-sm message-content" id="message-content-{{ $message->id }}">{{ $message->content }}</p>
+                                                
+                                                @if($message->sender_id === auth()->id())
+                                                    <button onclick="editMessage({{ $message->id }}, '{{ addslashes($message->content) }}')" class="absolute -left-8 top-1/2 -translate-y-1/2 p-1 text-slate-300 hover:text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity bg-white rounded-full shadow-sm border border-slate-100" title="Edit message">
+                                                        <span class="material-symbols-outlined text-[16px]">edit</span>
+                                                    </button>
+                                                @endif
                                             </div>
-                                            <span class="text-[10px] text-slate-400 mt-1 block {{ $message->sender_id === auth()->id() ? 'text-right' : 'text-left' }}">
-                                                {{ $message->created_at->format('H:i') }}
-                                            </span>
+                                            <div class="flex items-center gap-1 mt-1 {{ $message->sender_id === auth()->id() ? 'justify-end' : 'justify-start' }}">
+                                                <span class="text-[10px] text-slate-400">
+                                                    {{ $message->created_at->format('H:i') }}
+                                                </span>
+                                                @if($message->is_edited)
+                                                    <span class="text-[10px] text-slate-300 italic">(edited)</span>
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -96,20 +107,28 @@
                         <!-- Input Area -->
                         <div class="p-4 bg-white border-t border-slate-100">
                             <form id="message-form" class="flex items-center gap-2">
-                                <button type="button" class="p-2 text-slate-400 hover:text-slate-600 transition-colors">
+                                <!-- <button type="button" class="p-2 text-slate-400 hover:text-slate-600 transition-colors">
                                     <span class="material-symbols-outlined">add_circle</span>
                                 </button>
                                 <button type="button" class="p-2 text-slate-400 hover:text-slate-600 transition-colors">
                                     <span class="material-symbols-outlined">image</span>
-                                </button>
+                                </button> -->
                                 
-                                <div class="flex-1 relative">
-                                    <input type="text" id="message-input" name="content" 
-                                        class="w-full pl-4 pr-12 py-3 bg-slate-100 border-transparent focus:border-slate-300 focus:bg-white focus:ring-0 rounded-full text-sm transition-all" 
-                                        placeholder="Type your message..." required autocomplete="off">
-                                    <button type="button" class="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600">
-                                        <span class="material-symbols-outlined text-[20px]">sentiment_satisfied</span>
-                                    </button>
+                                <div class="flex-1 relative flex items-center gap-2">
+                                    <select id="expires-in" class="bg-slate-100 border-transparent focus:border-slate-300 focus:bg-white focus:ring-0 rounded-full text-xs py-2 px-3 text-slate-500 cursor-pointer hover:bg-slate-200 transition-colors" title="Auto-delete timer">
+                                        <option value="">Keep forever</option>
+                                        <option value="1">1 Minute</option>
+                                        <option value="60">1 Hour</option>
+                                        <option value="1440">24 Hours</option>
+                                    </select>
+                                    <div class="relative w-full">
+                                        <input type="text" id="message-input" name="content" 
+                                            class="w-full pl-4 pr-12 py-3 bg-slate-100 border-transparent focus:border-slate-300 focus:bg-white focus:ring-0 rounded-full text-sm transition-all" 
+                                            placeholder="Type your message..." required autocomplete="off">
+                                        <button type="button" class="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600">
+                                            <span class="material-symbols-outlined text-[20px]">sentiment_satisfied</span>
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <button type="submit" class="p-3 bg-slate-900 hover:bg-slate-800 text-white rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center group">
@@ -137,12 +156,27 @@
         const messagesDiv = document.getElementById('messages');
         const messageForm = document.getElementById('message-form');
         const messageInput = document.getElementById('message-input');
+        const expiresInSelect = document.getElementById('expires-in');
         
+        let editingMessageId = null;
+
         // Auto-scroll to bottom on load
         function scrollToBottom() {
             if(messagesDiv) messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
         scrollToBottom();
+
+        // Edit Message Function (exposed to window)
+        window.editMessage = function(id, content) {
+            editingMessageId = id;
+            messageInput.value = content;
+            messageInput.focus();
+            
+            // Visual cue that we are editing
+            messageInput.classList.add('ring-2', 'ring-yellow-400');
+            const submitBtn = messageForm.querySelector('button[type="submit"] span');
+            submitBtn.innerText = 'check'; // Change icon to checkmark
+        }
 
         // Listen for new messages
         Echo.private('chat-message.{{ $conversation->id }}')
@@ -172,21 +206,44 @@
                 const bubbleWrapper = document.createElement('div');
                 
                 const bubble = document.createElement('div');
-                bubble.className = `${isMyMessage ? 'bg-slate-900 text-white rounded-tr-none' : 'bg-white text-slate-900 border border-slate-200 rounded-tl-none'} rounded-2xl px-4 py-3 shadow-sm`;
+                bubble.className = `relative group ${isMyMessage ? 'bg-slate-900 text-white rounded-tr-none' : 'bg-white text-slate-900 border border-slate-200 rounded-tl-none'} rounded-2xl px-4 py-3 shadow-sm`;
                 
                 const messageP = document.createElement('p');
-                messageP.className = 'text-sm';
+                messageP.className = 'text-sm message-content';
+                messageP.id = `message-content-${e.message.id}`;
                 messageP.innerText = e.message.content;
                 
                 bubble.appendChild(messageP);
 
+                if (isMyMessage) {
+                    const editBtn = document.createElement('button');
+                    editBtn.onclick = () => editMessage(e.message.id, e.message.content);
+                    editBtn.className = 'absolute -left-8 top-1/2 -translate-y-1/2 p-1 text-slate-300 hover:text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity bg-white rounded-full shadow-sm border border-slate-100';
+                    editBtn.title = 'Edit message';
+                    editBtn.innerHTML = '<span class="material-symbols-outlined text-[16px]">edit</span>';
+                    bubble.appendChild(editBtn);
+                }
+
+                const timeDiv = document.createElement('div');
+                timeDiv.className = `flex items-center gap-1 mt-1 ${isMyMessage ? 'justify-end' : 'justify-start'}`;
+
                 const timeSpan = document.createElement('span');
-                timeSpan.className = `text-[10px] text-slate-400 mt-1 block ${isMyMessage ? 'text-right' : 'text-left'}`;
+                timeSpan.className = 'text-[10px] text-slate-400';
                 const now = new Date();
                 timeSpan.innerText = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+                
+                // Expiration indicator (optional, but good for UX)
+                if (e.message.expires_at) {
+                    const expSpan = document.createElement('span');
+                    expSpan.className = 'text-[10px] text-red-300 ml-1';
+                    expSpan.title = 'Auto-deletes';
+                    expSpan.innerHTML = '<span class="material-symbols-outlined text-[10px]">timer</span>';
+                    timeDiv.appendChild(expSpan);
+                }
 
+                timeDiv.appendChild(timeSpan);
                 bubbleWrapper.appendChild(bubble);
-                bubbleWrapper.appendChild(timeSpan);
+                bubbleWrapper.appendChild(timeDiv);
 
                 innerDiv.appendChild(avatarDiv);
                 innerDiv.appendChild(bubbleWrapper);
@@ -197,6 +254,21 @@
                 contentDiv.appendChild(wrapperDiv);
                 
                 scrollToBottom();
+            })
+            .listen('.message.updated', (e) => {
+                const messageP = document.getElementById(`message-content-${e.message.id}`);
+                if (messageP) {
+                    messageP.innerText = e.message.content;
+                    
+                    // Add edited label if not exists
+                    const metaDiv = messageP.closest('.relative').nextElementSibling;
+                    if (metaDiv && !metaDiv.querySelector('.italic')) {
+                        const editedSpan = document.createElement('span');
+                        editedSpan.className = 'text-[10px] text-slate-300 italic';
+                        editedSpan.innerText = '(edited)';
+                        metaDiv.appendChild(editedSpan);
+                    }
+                }
             });
 
         // AJAX Form Submission
@@ -205,8 +277,40 @@
             const content = messageInput.value;
             if (!content.trim()) return;
 
+            // Clear input and reset state locally first for responsiveness
             messageInput.value = '';
+            
+            // If editing
+            if (editingMessageId) {
+                const id = editingMessageId;
+                const url = '/messages/' + id; // Construct URL manually
+                
+                // Reset edit state UI
+                editingMessageId = null;
+                messageInput.classList.remove('ring-2', 'ring-yellow-400');
+                const submitBtn = messageForm.querySelector('button[type="submit"] span');
+                submitBtn.innerText = 'send';
 
+                try {
+                    const response = await fetch(url, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({ content: content })
+                    });
+                     if (!response.ok) throw new Error('Failed to update');
+                } catch (error) {
+                    console.error('Error updating message:', error);
+                    alert('Failed to update message.');
+                }
+                return;
+            }
+
+            // Normal sending
+            const expiresIn = expiresInSelect.value;
+            
             try {
                 const response = await fetch('{{ route('messages.store') }}', {
                     method: 'POST',
@@ -217,7 +321,8 @@
                     body: JSON.stringify({
                         conversation_id: {{ $conversation->id }},
                         receiver_id: {{ $conversation->users->where('id', '!=', auth()->id())->first()->id }},
-                        content: content
+                        content: content,
+                        expires_in: expiresIn
                     })
                 });
 

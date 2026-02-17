@@ -10,7 +10,19 @@ class Message extends Model
     /** @use HasFactory<\Database\Factories\MessageFactory> */
     use HasFactory;
 
-    protected $fillable = ['content', 'sender_id', 'receiver_id', 'conversation_id'];
+    protected $fillable = [
+        'content',
+        'sender_id',
+        'receiver_id',
+        'conversation_id',
+        'is_edited',
+        'expires_at',
+    ];
+
+    protected $casts = [
+        'is_edited' => 'boolean',
+        'expires_at' => 'datetime',
+    ];
 
     public function conversation()
     {

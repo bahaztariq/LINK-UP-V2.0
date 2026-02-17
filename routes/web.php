@@ -69,6 +69,7 @@ Route::middleware([
     Route::get('/conversations/{id}', [\App\Http\Controllers\ConversationController::class, 'show'])->name('conversations.show');
     Route::post('/conversations/create/{user}', [\App\Http\Controllers\ConversationController::class, 'store'])->name('conversation.create');
     Route::post('/messages/send', [\App\Http\Controllers\MessageController::class, 'store'])->name('messages.store');
+    Route::put('/messages/{message}', [\App\Http\Controllers\MessageController::class, 'update'])->name('messages.update');
 
     // Invitation Routes
     Route::post('/invitations/generate', [\App\Http\Controllers\InvitationController::class, 'generate'])->name('invitations.generate');
