@@ -3,99 +3,113 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>LinkUP - Connect with friends</title>
+    <title>LinkUP | Connect, Share, Evolve</title>
     
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .hero-gradient {
+            background: radial-gradient(circle at top left, rgba(19, 91, 236, 0.08), transparent 40%),
+                        radial-gradient(circle at bottom right, rgba(19, 91, 236, 0.05), transparent 40%);
+        }
+        .blob {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(135deg, rgba(19, 91, 236, 0.1) 0%, rgba(19, 91, 236, 0.05) 100%);
+            filter: blur(80px);
+            border-radius: 50%;
+            z-index: -1;
+        }
+    </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
-    <div class="w-full max-w-4xl flex items-center justify-center gap-8">
-        <!-- Left Side - Phone Mockup (Desktop Only) -->
-        <div class="hidden lg:block relative">
-            <div class="w-[454px] h-[618px] bg-gradient-to-br from-purple-100 to-pink-100 rounded-3xl flex items-center justify-center">
-                <span class="text-6xl font-bold text-gray-300">📱</span>
-            </div>
+<body class="bg-white text-slate-900 hero-gradient min-h-screen flex flex-col items-center">
+    
+    <!-- Animated Blobs -->
+    <div class="blob top-[-10%] left-[-10%]"></div>
+    <div class="blob bottom-[-10%] right-[-10%]"></div>
+
+    <main class="relative z-10 max-w-5xl mx-auto px-6 text-center pt-32 pb-16">
+        <!-- Badge -->
+        <div class="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-10 animate-fade-in shadow-sm">
+            <span class="text-primary text-sm font-bold tracking-wide flex items-center">
+                <span class="w-2 h-2 rounded-full bg-primary me-2 animate-pulse"></span>
+                THE NEXT GENERATION OF SOCIAL NETWORKING
+            </span>
         </div>
 
-        <!-- Right Side - Login/Signup -->
-        <div class="w-full max-w-[350px] flex flex-col gap-3">
-            <!-- Login Card -->
-            <div class="bg-white border border-gray-300 p-10 flex flex-col items-center">
-                <!-- Logo -->
-                <h1 class="text-5xl font-bold mb-8 tracking-wider" style="font-family: 'Billabong', 'Grand Hotel', cursive;">
-                    LinkUP
-                </h1>
+        <!-- Hero Title -->
+        <h1 class="text-6xl md:text-8xl font-extrabold tracking-tight text-slate-900 mb-6 leading-tight">
+            Connect without <br>
+            <span class="text-primary bg-clip-text">boundaries.</span>
+        </h1>
 
-                @if (Route::has('login'))
-                    @auth
-                        <!-- If logged in -->
-                        <a href="{{ url('/dashboard') }}" class="w-full bg-blue-500 text-white font-semibold py-2 rounded-lg text-sm text-center hover:bg-blue-600 transition">
-                            Go to Dashboard
-                        </a>
-                    @else
-                        <!-- Login Form -->
-                        <form action="{{ route('login') }}" method="GET" class="w-full flex flex-col gap-2">
-                            <input type="text" placeholder="Phone number, username, or email" class="w-full px-2 py-2 border border-gray-300 rounded text-xs bg-gray-50 focus:outline-none focus:ring-1 focus:ring-gray-300" />
-                            <input type="password" placeholder="Password" class="w-full px-2 py-2 border border-gray-300 rounded text-xs bg-gray-50 focus:outline-none focus:ring-1 focus:ring-gray-300" />
-                            <button type="submit" class="w-full bg-blue-500 text-white font-semibold py-2 rounded-lg text-sm mt-2 hover:bg-blue-600 transition">
-                                Log in
-                            </button>
-                        </form>
+        <!-- Subtitle -->
+        <p class="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto mb-12 leading-relaxed">
+            LinkUP is the modern space to share your journey, connect with the world, and build meaningful relationships in a clean, private, and powerful environment.
+        </p>
 
-                        <!-- Divider -->
-                        <div class="w-full flex items-center gap-4 my-4">
-                            <div class="flex-1 h-px bg-gray-300"></div>
-                            <span class="text-gray-500 font-semibold text-sm">OR</span>
-                            <div class="flex-1 h-px bg-gray-300"></div>
-                        </div>
+        <!-- CTA Buttons -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+            @if (Route::has('login'))
+                @auth
+                    <a href="{{ url('/dashboard') }}" class="w-full sm:w-auto px-10 py-4 bg-primary text-white font-bold rounded-2xl shadow-xl shadow-primary/20 hover:scale-105 transition-all duration-300">
+                        Go to Dashboard
+                    </a>
+                @else
+                    <a href="{{ route('register') }}" class="w-full sm:w-auto px-10 py-4 bg-primary text-white font-bold rounded-2xl shadow-xl shadow-primary/20 hover:scale-105 transition-all duration-300">
+                        Start Your Journey
+                    </a>
+                    <a href="{{ route('login') }}" class="w-full sm:w-auto px-10 py-4 bg-white text-slate-700 font-bold border border-slate-200 rounded-2xl hover:bg-slate-50 transition-all duration-300">
+                        Welcome Back
+                    </a>
+                @endauth
+            @endif
+        </div>
 
-                        <!-- Social Login -->
-                        <button class="flex items-center gap-2 text-blue-900 font-semibold text-sm">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                            Log in with Facebook
-                        </button>
-
-                        <!-- Forgot Password -->
-                        <a href="#" class="text-xs text-blue-900 mt-4">Forgot password?</a>
-                    @endauth
-                @endif
+        <!-- Social Proof/Stats -->
+        <div class="pt-8 border-t border-slate-100 flex flex-wrap justify-center gap-12 text-slate-400">
+            <div class="flex flex-col items-center">
+                <span class="text-2xl font-bold text-slate-800 tracking-tighter">Fast</span>
+                <span class="text-xs uppercase tracking-widest font-bold">Performance</span>
             </div>
-
-            <!-- Sign Up Card -->
-            @guest
-            <div class="bg-white border border-gray-300 p-6 text-center">
-                <p class="text-sm">
-                    Don't have an account? 
-                    @if (Route::has('register'))
-                        <a href="{{ route('register') }}" class="text-blue-500 font-semibold">Sign up</a>
-                    @endif
-                </p>
+            <div class="flex flex-col items-center border-x border-slate-100 px-12">
+                <span class="text-2xl font-bold text-slate-800 tracking-tighter">Secure</span>
+                <span class="text-xs uppercase tracking-widest font-bold">Authentication</span>
             </div>
-            @endguest
-
-            <!-- Get the App -->
-            <div class="flex flex-col items-center gap-3 mt-4">
-                <p class="text-sm">Get the app.</p>
-                <div class="flex gap-2">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play" class="h-10">
-                    <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on App Store" class="h-10">
-                </div>
+            <div class="flex flex-col items-center">
+                <span class="text-2xl font-bold text-slate-800 tracking-tighter">Modern</span>
+                <span class="text-xs uppercase tracking-widest font-bold">Architecture</span>
             </div>
+        </div>
+    </main>
+
+    <!-- App Preview/Mockup Placeholder -->
+    <div class="mt-20 relative w-full max-w-4xl opacity-50 select-none pointer-events-none">
+        <div class="aspect-video bg-slate-100 rounded-t-[3rem] border-x border-t border-slate-200 shadow-2xl overflow-hidden">
+             <div class="w-full h-8 bg-slate-200 flex items-center px-4 gap-2">
+                 <div class="w-2 h-2 rounded-full bg-slate-300"></div>
+                 <div class="w-2 h-2 rounded-full bg-slate-300"></div>
+                 <div class="w-2 h-2 rounded-full bg-slate-300"></div>
+             </div>
+             <div class="p-8 space-y-4">
+                 <div class="w-1/3 h-6 bg-slate-200 rounded-lg"></div>
+                 <div class="grid grid-cols-3 gap-4">
+                     <div class="h-40 bg-slate-201 rounded-2xl bg-slate-200/50"></div>
+                     <div class="h-40 bg-slate-201 rounded-2xl bg-slate-200/50"></div>
+                     <div class="h-40 bg-slate-201 rounded-2xl bg-slate-200/50"></div>
+                 </div>
+             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="absolute bottom-4 w-full text-center">
-        <div class="flex justify-center gap-4 text-xs text-gray-400 mb-4">
-            <a href="#">Meta</a>
-            <a href="#">About</a>
-            <a href="#">Blog</a>
-            <a href="#">Jobs</a>
-            <a href="#">Help</a>
-            <a href="#">API</a>
-            <a href="#">Privacy</a>
-            <a href="#">Terms</a>
-        </div>
-        <p class="text-xs text-gray-400">&copy; 2024 LinkUP from Meta</p>
-    </footer>
 </body>
 </html>

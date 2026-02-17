@@ -107,5 +107,9 @@
         @stack('modals')
 
         @livewireScripts
+
+        <script>
+    const userId = {{ auth()->id() }};
+</script>
     </body>
 </html>

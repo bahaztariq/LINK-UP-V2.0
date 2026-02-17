@@ -37,9 +37,14 @@
                     <!-- Actions -->
                     <div class="mt-3">
                          @if(Auth::id() === $user->id)
-                            <a href="{{ route('profile.show') }}" class="px-4 py-1.5 border border-gray-300 rounded-full font-bold text-[15px] hover:bg-gray-100 transition-colors">
-                                Edit Profile
-                            </a>
+                            <div class="flex gap-2">
+                                <a href="{{ route('profile.show') }}" class="px-4 py-1.5 border border-gray-300 rounded-full font-bold text-[15px] hover:bg-gray-100 transition-colors">
+                                    Edit Profile
+                                </a>
+                                <button onclick="toggleQR(true)" class="w-9 h-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors group" title="Show QR Code">
+                                    <span class="material-symbols-outlined text-[20px] text-slate-600 group-hover:text-primary transition-colors">qr_code_2</span>
+                                </button>
+                            </div>
                         @else
                              <!-- Friend/Follow Logic -->
                              <div class="flex gap-2">
@@ -152,4 +157,61 @@
         <!-- Right Column: Widgets (Same as Dashboard for now) -->
         
     </div>
+
+@push('modals')
+    <!-- QR Modal -->
+    <div id="qr-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/60 backdrop-blur-sm">
+        <div class="bg-white rounded-[32px] p-8 max-w-sm w-full mx-4 shadow-2xl">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h3 class="text-2xl font-black text-gray-900">Scan to Connect</h3>
+                    <p class="text-sm text-gray-500">Instantly add friends</p>
+                </div>
+                <button onclick="toggleQR(false)" class="size-10 flex items-center justify-center hover:bg-gray-100 rounded-full">
+                    <span class="material-symbols-outlined text-gray-400">close</span>
+                </button>
+            </div>
+            
+            <div class="flex flex-col items-center">
+                <div class="bg-gray-50 p-6 rounded-[24px] mb-8 border border-gray-100 relative min-h-[240px] min-w-[240px] flex items-center justify-center">
+                    <div id="qr-loading" class="absolute inset-0 flex items-center justify-center">
+                        <div class="size-10 border-4 border-gray-200 border-t-black rounded-full animate-spin"></div>
+                    </div>
+                    <img id="qr-image" src="" alt="QR Code" class="hidden w-full h-full">
+                </div>
+                
+                <p class="text-center text-[15px] text-gray-500 mb-8 font-medium">
+                    Show this to someone or share your link to connect! ⚡️
+                </p>
+                
+                <div class="w-full flex flex-col gap-4">
+                    <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-center justify-between gap-4">
+                        <span id="invite-link-text" class="text-xs text-gray-400 truncate font-mono">Generating...</span>
+                        <button onclick="navigator.clipboard.writeText(document.getElementById('invite-link-text').innerText); this.innerText='Copied!'; setTimeout(()=>this.innerText='Copy Link', 2000)" class="text-black font-bold text-sm bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all active:scale-95 shrink-0">
+                            Copy Link
+                        </button>
+                    </div>
+                    <button onclick="toggleQR(false)" class="w-full py-4 bg-black text-white rounded-full font-bold text-[15px] hover:bg-gray-800 transition-all">
+                        Done
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function toggleQR(show) {
+            document.getElementById('qr-modal').classList.toggle('hidden', !show);
+            if (!show) return;
+
+            const res = await fetch('{{ route('invitations.generate') }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' } }).then(r => r.json());
+            document.getElementById('qr-image').src = `{{ url('/invitations/qr') }}/${res.token}`;
+            document.getElementById('invite-link-text').innerText = res.url;
+            document.getElementById('qr-image').onload = () => {
+                document.getElementById('qr-loading').classList.add('hidden');
+                document.getElementById('qr-image').classList.remove('hidden');
+            };
+        }
+    </script>
+@endpush
 </x-app-layout>
