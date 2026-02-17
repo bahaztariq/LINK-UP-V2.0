@@ -24,11 +24,40 @@
                 $activeClass = 'bg-primary/10 text-primary font-semibold';
                 $inactiveClass = 'hover:bg-slate-100 text-slate-500';
             @endphp
-            <a class="flex items-center gap-4 px-3 xl:px-4 py-3 rounded-xl transition-colors justify-center xl:justify-start {{ $isActive ? $activeClass : $inactiveClass }}" 
-               href="{{ Route::has($item['route']) ? route($item['route']) : '#' }}">
-                <span class="material-symbols-outlined {{ $isActive ? 'font-fill' : '' }}">{{ $item['icon'] }}</span>
-                <span class="hidden xl:inline text-slate-900">{{ $item['label'] }}</span>
-            </a>
+       <a  class="flex items-center gap-4 px-3 xl:px-4 py-3 rounded-xl transition-colors justify-center xl:justify-start {{ $isActive ? $activeClass : $inactiveClass }}" 
+   href="{{ Route::has($item['route']) ? route($item['route']) : '#' }}">
+
+    <div id='{{ $item["label"] }}' class="relative">
+
+        <span class="material-symbols-outlined {{ $isActive ? 'font-fill' : '' }}">
+            {{ $item['icon'] }}
+        </span>
+
+        @if(($item['label'] == 'Notifications' ) && auth()->user()->unreadNotifications()->exists())
+        <span class="absolute -top-1 -right-1 h-2.5 w-2.5 bg-red-500 rounded-full"></span>
+        @endif
+       
+
+        @if($item['label'] == 'Messages'  )
+        <span id="msg-dot"
+          class="hidden absolute -top-1 -right-1 h-2.5 w-2.5 bg-red-500 rounded-full">
+    </span>
+        @endif
+
+        @if($item['label'] == 'Notifications' )
+        <span id="nt-dot"
+          class="hidden absolute -top-1 -right-1 h-2.5 w-2.5 bg-red-500 rounded-full">
+    </span>
+        @endif
+
+    </div>
+
+    <span class="hidden xl:inline text-slate-900">
+        {{ $item['label'] }}
+    </span>
+
+</a>
+
         @endforeach
 
         <!-- Profile Link -->
@@ -106,3 +135,9 @@
          @endif
     </a>
 </div>
+<script>
+    
+
+
+    
+</script>

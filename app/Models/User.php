@@ -136,8 +136,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Message::class, 'sender_id');
     }
-    public function friendInvitations()
+    
+    public function invitations()
     {
-        return $this->hasMany(FriendInvitation::class);
+        return $this->hasMany(Invitation::class);
     }
 }

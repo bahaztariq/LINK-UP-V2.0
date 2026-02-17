@@ -7,6 +7,10 @@ namespace App\Http\Controllers;
 use App\Models\Friendship;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Notifications\NewMessage;
+use App\Events\InvitNotification;
+use App\Events\acceptInviNotification;
+
 
 class FriendshipController extends Controller
 {
@@ -41,11 +45,19 @@ class FriendshipController extends Controller
             return back();
         }
 
+        $address = \App\Models\User::find($validated['addressee_id']);
+        // dd($address['id']);
         Friendship::create([
             'requester_id' => $request->user()->id,
             'addressee_id' => $validated['addressee_id'],
             'status' => 'pending',
         ]);
+
+        $message = 'You received a new message';
+        $address->notify(new NewMessage($message , auth()->user()  , 'invitation'));
+         
+        // ✅ is Working 100%
+        event(new InvitNotification(auth()->user(), $address['id'] ));
 
         return back();
     }
@@ -60,6 +72,8 @@ class FriendshipController extends Controller
             ->firstOrFail();
 
         $friendship->update(['status' => 'accepted']);
+// dd($friendship['addressee_id']);
+            event(new acceptInviNotification(auth()->user() , $friendship['requester_id'] ));
 
         return back();
     }

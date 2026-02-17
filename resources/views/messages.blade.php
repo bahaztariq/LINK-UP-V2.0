@@ -271,6 +271,7 @@
                 }
             });
 
+
         // AJAX Form Submission
         messageForm.addEventListener('submit', async (e) => {
             e.preventDefault();

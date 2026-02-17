@@ -50,9 +50,8 @@ Route::middleware([
         return view('explore');
     })->name('explore');
 
-    Route::get('/notifications', function () {
-        return view('notifications');
-    })->name('notifications');
+    Route::get('/notifications', [\App\Http\Controllers\NotificationController::class , 'index'])->name('notifications');
+    Route::post('/mark-as-read', [\App\Http\Controllers\NotificationController::class , 'markAsRead'])->name('mark_as_read');
 
 
 
