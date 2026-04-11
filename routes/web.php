@@ -46,9 +46,7 @@ Route::middleware([
     Route::get('/friends', [\App\Http\Controllers\FriendsController::class, 'index'])->name('friendships.index');
     Route::resource('friendships', \App\Http\Controllers\FriendshipController::class);
 
-    Route::get('/explore', function () {
-        return view('explore');
-    })->name('explore');
+    Route::get('/explore', [\App\Http\Controllers\ExploreController::class, 'index'])->name('explore');
 
     Route::get('/notifications', [\App\Http\Controllers\NotificationController::class , 'index'])->name('notifications');
     Route::post('/mark-as-read', [\App\Http\Controllers\NotificationController::class , 'markAsRead'])->name('mark_as_read');
@@ -69,9 +67,13 @@ Route::middleware([
     Route::post('/conversations/create/{user}', [\App\Http\Controllers\ConversationController::class, 'store'])->name('conversation.create');
     Route::post('/messages/send', [\App\Http\Controllers\MessageController::class, 'store'])->name('messages.store');
     Route::put('/messages/{message}', [\App\Http\Controllers\MessageController::class, 'update'])->name('messages.update');
+    Route::delete('/conversations/{id}', [\App\Http\Controllers\ConversationController::class, 'destroy'])->name('conversations.destroy');
+    Route::post('/friendships/block/{userId}', [\App\Http\Controllers\FriendshipController::class, 'block'])->name('friendships.block');
 
     // Invitation Routes
     Route::post('/invitations/generate', [\App\Http\Controllers\InvitationController::class, 'generate'])->name('invitations.generate');
     Route::get('/invitations/qr/{token}', [\App\Http\Controllers\InvitationController::class, 'showQR'])->name('invitations.qr');
     Route::get('/invitations/accept/{token}', [\App\Http\Controllers\InvitationController::class, 'accept'])->name('invitations.accept');
+
+    Route::post('/call/signal', [\App\Http\Controllers\CallController::class, 'signal'])->name('call.signal');
 });

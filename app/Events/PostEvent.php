@@ -7,45 +7,37 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class LikeNotification implements ShouldBroadcast
+class PostEvent implements ShouldBroadcast
 {
     use Dispatchable, SerializesModels;
 
     public $sender;
     public $receiverId;
-    /**
-     * Create a new event instance.
-     */
-      public function __construct($sender, $receiverId)
+
+    public function __construct($sender, $receiverId)
     {
         $this->sender = $sender;
         $this->receiverId = $receiverId;
     }
 
-
-   
     public function broadcastOn(): array
     {
         return [
             new PrivateChannel("New-notification.{$this->receiverId}"),
         ];
-        }
+    }
 
-    public function broadcastWith(): array{
+    public function broadcastWith(): array
+    {
         return [
-       'sender_name' => $this->sender->name,
-       'message' => 'Like your post',
-       'type' => 'like',
+            'sender_name' => $this->sender->name,
+            'message' => 'Add New Post',
+            'type' => 'post',
         ];
     }
 
-        public function broadcastAs()
+    public function broadcastAs()
     {
         return 'new.notification';
     }
-
-
-
-
 }
-

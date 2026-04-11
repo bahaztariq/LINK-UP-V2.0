@@ -2,13 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreMessageRequest;
+use App\Http\Requests\UpdateMessageRequest;
+use App\Services\MessageService;
+use App\Models\Message;
 use Illuminate\Http\Request;
-
-use App\Events\MessageSent;
-use App\Events\mssgNotification;
 
 class MessageController extends Controller
 {
+    protected $messageService;
+
+    public function __construct(MessageService $messageService)
+    {
+        $this->messageService = $messageService;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -28,71 +35,22 @@ class MessageController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreMessageRequest $request)
     {
-        $validated = $request->validate([
-            'content' => 'required|string|max:1000',
-            'receiver_id' => 'required|exists:users,id',
-            'conversation_id' => 'required|exists:conversations,id',
-            'expires_in' => 'nullable|integer|min:1', // in minutes
-        ]);
-
-        $expiresAt = null;
-        if (isset($validated['expires_in']) && $validated['expires_in'] > 0) {
-            $expiresAt = now()->addMinutes($validated['expires_in']);
-        }
-
-        $message = $request->user()->messages()->create([
-            'content' => $validated['content'],
-            'receiver_id' => $validated['receiver_id'],
-            'conversation_id' => $validated['conversation_id'],
-            ]);
-            
-            
-            
-            event(new MessageSent($message,$validated['conversation_id']));
-            
-            // $receiver = User::find($validated['receiver_id']);
-            // if ($receiver) {
-                // $notificationText = 'Sent You A Message';
-
-                //  $receiver->notify(
-                //      new NewMessage($notificationText, auth()->user(), 'message')
-                //  );
-                // }
-             
-                 event(new mssgNotification(
-                     auth()->user(),
-                     $validated['receiver_id'],
-                     $validated['conversation_id']
-                 ));
-
-            // dd($receiver);
-          
-                
-      
+        $this->messageService->sendMessage($request->user(), $request->validated());
 
         return response()->json(['message' => 'Message sent successfully']);
     }
 
-    public function update(Request $request, Message $message)
+    public function update(UpdateMessageRequest $request, Message $message)
     {
-        if ($request->user()->id !== $message->sender_id) {
+        $result = $this->messageService->updateMessage($request->user(), $message, $request->validated()['content']);
+
+        if (!$result) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $validated = $request->validate([
-            'content' => 'required|string|max:1000',
-        ]);
-
-        $message->update([
-            'content' => $validated['content'],
-            'is_edited' => true,
-        ]);
-
-        event(new \App\Events\MessageUpdated($message));
-
-        return response()->json(['message' => 'Message updated successfully', 'data' => $message]);
+        return response()->json(['message' => 'Message updated successfully', 'data' => $result]);
     }
 
     /**

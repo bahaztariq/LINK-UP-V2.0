@@ -43,54 +43,45 @@
                 <section class="bg-slate-100 rounded-2xl p-5 border border-slate-200">
                     <h2 class="text-lg font-bold mb-4">Trending Topics</h2>
                     <div class="flex flex-col gap-5">
+                        @foreach($trendingTopics as $topic)
                         <div class="cursor-pointer group">
-                            <p class="text-xs text-slate-500 flex items-center justify-between">Technology · Trending <span class="material-symbols-outlined text-sm">more_horiz</span></p>
-                            <p class="font-bold group-hover:text-primary transition-colors">#UnifiedFeed</p>
-                            <p class="text-xs text-slate-500">12.4k posts</p>
+                            <p class="text-xs text-slate-500 flex items-center justify-between">{{ $topic['category'] }} · Trending <span class="material-symbols-outlined text-sm">more_horiz</span></p>
+                            <p class="font-bold group-hover:text-primary transition-colors">{{ $topic['tag'] }}</p>
+                            <p class="text-xs text-slate-500">{{ is_numeric($topic['count']) ? number_format($topic['count']) . ' posts' : $topic['count'] . ' posts' }}</p>
                         </div>
-                        <div class="cursor-pointer group">
-                            <p class="text-xs text-slate-500 flex items-center justify-between">Design · Trending <span class="material-symbols-outlined text-sm">more_horiz</span></p>
-                            <p class="font-bold group-hover:text-primary transition-colors">UIUX Trends 2024</p>
-                            <p class="text-xs text-slate-500">8,521 posts</p>
-                        </div>
-                        <div class="cursor-pointer group">
-                             <p class="text-xs text-slate-500 flex items-center justify-between">World News · Live <span class="material-symbols-outlined text-sm">more_horiz</span></p>
-                             <p class="font-bold group-hover:text-primary transition-colors">Mars Rover Discovery</p>
-                             <p class="text-xs text-slate-500">45.2k posts</p>
-                        </div>
+                        @endforeach
                     </div>
                 </section>
 
                 <!-- Suggested for You -->
                 <section class="bg-slate-100 rounded-2xl p-5 border border-slate-200">
                     <h2 class="text-lg font-bold mb-4">Who to follow</h2>
-                    <!-- We should fetch real users here eventually, but for layout we can keep static or include a component -->
-                    @if(isset($suggestedUsers))
-                        <div class="flex flex-col gap-4">
-                            @foreach($suggestedUsers as $suggestedUser)
-                             <div class="flex items-center justify-between gap-3">
-                                <div class="flex items-center gap-2 min-w-0">
-                                    <a href="{{ route('user.show', $suggestedUser->id) }}">
-                                        @if ($suggestedUser->profile_photo_url)
-                                            <div class="size-10 rounded-full bg-cover bg-center shrink-0" style='background-image: url("{{ $suggestedUser->profile_photo_url }}")'></div>
-                                        @else
-                                            <div class="size-10 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-500">{{ substr($suggestedUser->name, 0, 1) }}</div>
-                                        @endif
-                                    </a>
-                                    <div class="min-w-0">
-                                        <a href="{{ route('user.show', $suggestedUser->id) }}" class="text-sm font-bold truncate block hover:underline">{{ $suggestedUser->name }}</a>
-                                        <p class="text-xs text-slate-500 truncate">@ {{ strtolower(str_replace(' ', '', $suggestedUser->name)) }}</p>
-                                    </div>
+                    <div class="flex flex-col gap-4">
+                        @forelse($suggestedUsers as $suggestedUser)
+                         <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-2 min-w-0">
+                                <a href="{{ route('user.show', $suggestedUser->id) }}">
+                                    @if ($suggestedUser->profile_photo_url)
+                                        <div class="size-10 rounded-full bg-cover bg-center shrink-0" style='background-image: url("{{ $suggestedUser->profile_photo_url }}")'></div>
+                                    @else
+                                        <div class="size-10 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-500">{{ substr($suggestedUser->name, 0, 1) }}</div>
+                                    @endif
+                                </a>
+                                <div class="min-w-0">
+                                    <a href="{{ route('user.show', $suggestedUser->id) }}" class="text-sm font-bold truncate block hover:underline">{{ $suggestedUser->name }}</a>
+                                    <p class="text-xs text-slate-500 truncate">@ {{ strtolower(str_replace(' ', '', $suggestedUser->name)) }}</p>
                                 </div>
-                                <form action="{{ route('friendships.store') }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="addressee_id" value="{{ $suggestedUser->id }}">
-                                    <button class="bg-slate-900 text-white text-xs font-bold px-4 py-2 rounded-full hover:opacity-80 transition-opacity">Follow</button>
-                                </form>
                             </div>
-                            @endforeach
+                            <form action="{{ route('friendships.store') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="addressee_id" value="{{ $suggestedUser->id }}">
+                                <button class="bg-slate-900 text-white text-xs font-bold px-4 py-2 rounded-full hover:opacity-80 transition-opacity">Follow</button>
+                            </form>
                         </div>
-                    @endif
+                        @empty
+                            <p class="text-xs text-slate-500">No suggestions available.</p>
+                        @endforelse
+                    </div>
                 </section>
 
                 <!-- Footer Links -->
