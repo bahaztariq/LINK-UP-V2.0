@@ -3,17 +3,21 @@
 
 
 namespace App\Http\Controllers;
-use App\Models\Friendship;
-use App\events\PostNotification;
+use App\Http\Requests\StorePostRequest;
+use App\Http\Requests\UpdatePostRequest;
+use App\Services\PostService;
 use App\Models\Post;
 use App\Models\User;
-use App\Notifications\NewMessage;
-
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Notification;
 
 class PostController extends Controller
 {
+    protected $postService;
+
+    public function __construct(PostService $postService)
+    {
+        $this->postService = $postService;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -33,49 +37,15 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StorePostRequest $request)
     {
-        $validated = $request->validate([
-            'content' => 'required|string|max:1000',
-            'image' => 'nullable|image|max:10240', // 10MB Max
-            'video' => 'nullable|mimetypes:video/avi,video/mpeg,video/quicktime,video/mp4|max:51200', // 50MB Max
-        ]);
+        $validated = $request->validated();
 
-        $postData = ['content' => $validated['content']];
-
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('posts/images', 'public');
-            $postData['image_path'] = $path;
-        }
-
-        if ($request->hasFile('video')) {
-            $path = $request->file('video')->store('posts/videos', 'public');
-            $postData['video_path'] = $path;
-        }
-
-        $request->user()->posts()->create($postData);
-
-    $friendships = Friendship::where('status', 'accepted')
-    ->where(function ($query) {
-        $query->where('requester_id', auth()->id())
-              ->orWhere('addressee_id', auth()->id());
-    })
-    ->get();
-
-    $friends = $friendships->map(function ($fr){
-        return $fr->requester_id === auth()->id() ? $fr->addressee_id :
-        $fr->requester_id;
-    });
-
-    
-
-        $users = User::whereIn('id' , $friends)->get();
-        // dd($users);
-        Notification::send($users,new NewMessage($request->content , auth()->user(), 'Posts'));
-        foreach($users as $user){
-
-            event(new PostNotification(auth()->user() , $user->id ));
-        }
+        $this->postService->createPost(
+            $request->user(),
+            $request->validated(),
+            $request->only(['image', 'video'])
+        );
     
         return redirect()->route('dashboard');
     }
@@ -99,15 +69,11 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Post $post)
+    public function update(UpdatePostRequest $request, Post $post)
     {
-        // $this->authorize('update', $post);
+        $this->authorize('update', $post);
 
-        $validated = $request->validate([
-            'content' => 'required|string|max:1000',
-        ]);
-
-        $post->update($validated);
+        $post->update($request->validated());
 
         return back()->with('success', 'Post updated successfully.');
     }
@@ -117,7 +83,7 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        // $this->authorize('delete', $post);
+        $this->authorize('delete', $post);
 
         $post->delete();
 

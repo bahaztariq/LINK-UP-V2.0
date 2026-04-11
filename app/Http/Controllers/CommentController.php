@@ -1,43 +1,29 @@
 <?php
 
-
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCommentRequest;
+use App\Services\CommentService;
 use App\Models\Comment;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Notifications\NewMessage;
 
-
 class CommentController extends Controller
 {
+    protected $commentService;
+
+    public function __construct(CommentService $commentService)
+    {
+        $this->commentService = $commentService;
+    }
+
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreCommentRequest $request)
     {
-        $validated = $request->validate([
-            'body' => 'required|string|max:1000',
-            'commentable_id' => 'required|integer',
-            'commentable_type' => 'required|string',
-            'parent_id' => 'nullable|exists:comments,id',
-        ]);
-
-        $comment = $request->user()->comments()->create($validated);
-  
-    if(auth()->id() != $request->user_id){
-
-    $mssgReaction = User::find($request->user_id);
-
-    if($mssgReaction){
-        $message = $request->body;
-
-        $mssgReaction->notify(
-            new NewMessage($message, auth()->user(), 'comment')
-        );
-    }
-}
-
+        $this->commentService->createComment($request->user(), $request->validated());
 
         return back();
     }
