@@ -13,7 +13,12 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        $posts = Post::with(['user', 'comments', 'reactions'])->latest()->get();
+        $friendIds = $request->user()->friend_ids->push($request->user()->id);
+
+        $posts = Post::with(['user', 'comments', 'reactions'])
+            ->whereIn('user_id', $friendIds)
+            ->latest()
+            ->cursorPaginate(10);
         
         // Suggested users
         $suggestedUsers = User::where('id', '!=', Auth::id())

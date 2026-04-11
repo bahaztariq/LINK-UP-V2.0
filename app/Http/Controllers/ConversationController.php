@@ -87,4 +87,21 @@ class ConversationController extends Controller
     {
         //
     }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        $conversation = Conversation::findOrFail($id);
+
+        // Authorization check
+        if ($conversation->user1_id !== auth()->id() && $conversation->user2_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $conversation->delete();
+
+        return redirect()->route('conversations.index')->with('success', 'Conversation deleted successfully.');
+    }
 }
