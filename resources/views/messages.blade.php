@@ -45,21 +45,74 @@
                 <div class="flex-1 flex flex-col bg-slate-50">
                     @if(isset($conversation))
                         <!-- Header -->
-                        <div class="p-4 bg-white border-b border-slate-100 flex items-center gap-3 shadow-sm z-10">
-                            <div class="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 font-bold overflow-hidden">
-                                @if($conversation->users->where('id', '!=', auth()->id())->first()->profile_photo_url)
-                                    <img src="{{ $conversation->users->where('id', '!=', auth()->id())->first()->profile_photo_url }}" class="w-full h-full object-cover">
-                                @else
-                                    {{ substr($conversation->users->where('id', '!=', auth()->id())->first()->name, 0, 1) }}
-                                @endif
+                        <div class="p-4 bg-white border-b border-slate-100 flex items-center justify-between shadow-sm z-10" x-data="{ open: false }">
+                            <div class="flex items-center gap-3">
+                                <div class="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 font-bold overflow-hidden">
+                                    @php
+                                        $otherUser = $conversation->users->where('id', '!=', auth()->id())->first();
+                                    @endphp
+                                    @if($otherUser->profile_photo_url)
+                                        <img src="{{ $otherUser->profile_photo_url }}" class="w-full h-full object-cover">
+                                    @else
+                                        {{ substr($otherUser->name, 0, 1) }}
+                                    @endif
+                                </div>
+                                <div>
+                                    <h2 class="text-lg font-bold text-slate-900 leading-tight">
+                                        {{ $otherUser->name }}
+                                    </h2>
+                                    <span class="text-xs text-green-500 flex items-center gap-1">
+                                        <span class="w-2 h-2 rounded-full bg-green-500"></span> Online
+                                    </span>
+                                </div>
                             </div>
-                            <div>
-                                <h2 class="text-lg font-bold text-slate-900 leading-tight">
-                                    {{ $conversation->users->where('id', '!=', auth()->id())->first()->name }}
-                                </h2>
-                                <span class="text-xs text-green-500 flex items-center gap-1">
-                                    <span class="w-2 h-2 rounded-full bg-green-500"></span> Online
-                                </span>
+
+                            <div class="flex items-center gap-2">
+                                <!-- Call Icons -->
+                                <button class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-full transition-all" title="Audio Call">
+                                    <span class="material-symbols-outlined text-[20px]">call</span>
+                                </button>
+                                <button class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-full transition-all" title="Video Call">
+                                    <span class="material-symbols-outlined text-[20px]">videocam</span>
+                                </button>
+
+                                <!-- Dropdown Menu -->
+                                <div class="relative">
+                                    <button @click="open = !open" class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-full transition-all" title="More options">
+                                        <span class="material-symbols-outlined text-[20px]">more_vert</span>
+                                    </button>
+
+                                    <!-- Dropdown Panel -->
+                                    <div x-show="open" 
+                                         @click.away="open = false"
+                                         x-transition:enter="transition ease-out duration-100"
+                                         x-transition:enter-start="opacity-0 scale-95"
+                                         x-transition:enter-end="opacity-100 scale-100"
+                                         class="absolute right-0 mt-2 w-48 bg-white border border-slate-100 rounded-xl shadow-xl z-50 py-1 overflow-hidden">
+                                        
+                                        <form action="{{ route('conversations.destroy', $conversation->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this conversation?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-colors">
+                                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                                                Delete Conversation
+                                            </button>
+                                        </form>
+
+                                        <form action="{{ route('friendships.block', $otherUser->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to block this user?')">
+                                            @csrf
+                                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors">
+                                                <span class="material-symbols-outlined text-[18px]">block</span>
+                                                Block User
+                                            </button>
+                                        </form>
+
+                                        <a href="#" class="px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-colors">
+                                            <span class="material-symbols-outlined text-[18px]">report</span>
+                                            Report User
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
