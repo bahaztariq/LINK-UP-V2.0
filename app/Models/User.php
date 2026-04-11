@@ -99,16 +99,15 @@ class User extends Authenticatable
         return $this->friendshipsReceived()->where('status', 'pending')->with('requester')->get();
     }
 
+    public function getFriendIdsAttribute()
+    {
+        return $this->friendshipsSent()->where('status', 'accepted')->pluck('addressee_id')
+            ->merge($this->friendshipsReceived()->where('status', 'accepted')->pluck('requester_id'));
+    }
+
     public function getFriendsAttribute()
     {
-        // Get IDs of friends where I am the requester
-        $sent = $this->friendshipsSent()->where('status', 'accepted')->pluck('addressee_id');
-        // Get IDs of friends where I am the addressee
-        $received = $this->friendshipsReceived()->where('status', 'accepted')->pluck('requester_id');
-        
-        $friendIds = $sent->merge($received);
-        
-        return User::whereIn('id', $friendIds)->get();
+        return User::whereIn('id', $this->friend_ids)->get();
     }
 
     public function isFriendWith(User $user)
